@@ -35,8 +35,14 @@ routerProduct.post('/', (req, res, next) => {
         name: req.body.name,
         price: req.body.price
     });
-    product.save().then((doc) => {
-        res.status(201).json(doc)
+    product.save().then((result) => {
+        res.status(201).json({
+            message:"Product is created",
+            name : result.name,
+            price: result.price,
+            _id: result._id,
+            request : {type:'GET',Url : "http://localhost:3000/products/"+result.id}
+        })
     }).catch((err) => {
         res.status(500).json({Error:err})
     });
@@ -45,9 +51,16 @@ routerProduct.post('/', (req, res, next) => {
 routerProduct.get('/:productId', (req, res, next) => {
     const id = req.params.productId;
 
-    Product.findById(id).exec().then((doc) => {
+    Product.findById(id).select("name price _id").exec().then((doc) => {
         if (doc) {
-            res.status(200).json(doc)
+            res.status(200).json({
+                product:doc,
+                request:{
+                    type:'GET',
+                    description:"Get all products",
+                    url:"http://localhost:3000/products/"
+                }
+            })
         } else {
             res.status(404).json({ message: "There is no entry with this id" });
         }
