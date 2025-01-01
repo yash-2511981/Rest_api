@@ -78,7 +78,13 @@ routerProduct.patch('/:id', (req, res, next) => {
     }
 
     Product.findOneAndUpdate({ _id: id }, { $set: updateOps }, { new: true }).exec().then(doc => {
-        res.status(200).json(doc);
+        res.status(200).json({
+            message:"Product is updated",
+            request : {
+                type:'GET',
+                url:"http://localhost:3000/products/"+ id
+            }
+        });
     }).catch(err => {
         res.status(500).json({ Error: err })
     })
@@ -87,7 +93,17 @@ routerProduct.patch('/:id', (req, res, next) => {
 routerProduct.delete('/:id', (req, res, next) => {
     const id = req.params.id;
     Product.findByIdAndDelete(id).exec().then((result) => {
-        res.status(200).json(result)
+        res.status(200).json({
+            message:"product is deleted",
+            request:{
+                type:'POST',
+                url:"http://localhost:3000/products/",
+                body:{
+                    name:"String",
+                    price:"Number"
+                }
+            }
+        })
     }).catch((err) => {
         res.status(500).json({ Error: err })
     });
